@@ -1,0 +1,11 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(fromVec3([4, 81, 4]));
+
+function fromVec3(vec: vec3): s32 {
+    return vec.y;
+}
+
+type vec3 = {x: s32, y: s32, z: s32};

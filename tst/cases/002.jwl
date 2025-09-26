@@ -1,0 +1,13 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromMultiplication());
+
+function getExitCodeFromMultiplication(): s32 {
+    return mul(mul(2, 3), 4);
+}
+
+function mul(a: s32, b: s32): s32 {
+    return a * b;
+}

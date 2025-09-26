@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(fromObject([4, 17, 3]));
+
+function fromObject(obj: {a: s32, b: s32, c: s32}): s32 {
+    return obj.b;
+}

@@ -1,0 +1,42 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(
+    getExitCodeFromDivision() *
+    getExitCodeFromMultiplication() -
+    getExitCodeFromSubtraction() + 
+    getExitCodeFromAddition()
+); // 126
+
+function div(a: s32, b: s32): s32 {
+    return a / b;
+}
+
+function mul(a: s32, b: s32): s32 {
+    return a * b;
+}
+
+function sub(a: s32, b: s32): s32 {
+    return a - b;
+}
+
+function add(a: s32, b: s32): s32 {
+    return a + b;
+}
+
+function getExitCodeFromDivision(): s32 {
+    return div(div(32, 4), 2);
+}
+
+function getExitCodeFromMultiplication(): s32 {
+    return mul(mul(2, 3), 4);
+}
+
+function getExitCodeFromSubtraction(): s32 {
+    return sub(sub(100, 50), 20);
+}
+
+function getExitCodeFromAddition(): s32 {
+    return add(10, add(20, 30));
+}

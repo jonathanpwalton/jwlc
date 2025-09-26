@@ -1,0 +1,13 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromDivision());
+
+function div(a: s32, b: s32): s32 {
+    return a / b;
+}
+
+function getExitCodeFromDivision(): s32 {
+    return div(div(32, 4), 2);
+}

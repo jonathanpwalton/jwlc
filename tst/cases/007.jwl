@@ -1,0 +1,15 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit((getCodeFromObject({
+    a: 1,
+    b: 2.245,
+    c: 3,
+    d: 16,
+    e: 5,
+}, 10) - 6) * 4); // 80
+
+function getCodeFromObject(obj: {a: f32, b: f64, c: u32, d: s32, e: u64,}, b: s32): s32 {
+    return obj.d + b;
+}

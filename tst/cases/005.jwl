@@ -1,0 +1,15 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromObject()); // 4
+
+function getExitCodeFromObject(): s32 {
+    return {
+        a: 1 as f32,     // 4  [0  ... 4]
+        b: 2.245 as f64, // 8  [8  ... 16]
+        c: 3 as u32,     // 4  [16 ... 20]
+        d: 4 as s32,     // 4  [20 ... 24]
+        e: 5 as u64,     // 8  [24 ... 32]
+    }.d;
+}

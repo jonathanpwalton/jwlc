@@ -1,0 +1,13 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromAddition());
+
+function getExitCodeFromAddition(): s32 {
+    return add(10, add(20, 30));
+}
+
+function add(a: s32, b: s32): s32 {
+    return a + b;
+}

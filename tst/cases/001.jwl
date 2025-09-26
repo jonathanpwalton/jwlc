@@ -1,0 +1,13 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromSubtraction());
+
+function getExitCodeFromSubtraction(): s32 {
+    return sub(sub(100, 50), 20);
+}
+
+function sub(a: s32, b: s32): s32 {
+    return a - b;
+}

@@ -1,0 +1,9 @@
+// @ts-nocheck
+
+import { exit } from './process';
+
+exit(getExitCodeFromTuple()); // 3
+
+function getExitCodeFromTuple(): s32 {
+    return [1 as f32, 10 as u64, 3 as s32, 7 as u8][2];
+}

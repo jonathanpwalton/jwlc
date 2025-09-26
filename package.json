@@ -1,0 +1,14 @@
+{
+    "name": "jwlc",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/main.mjs",
+        "test": "node run-tests.mjs"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs"
+}
