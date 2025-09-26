@@ -145,18 +145,6 @@ export class Tokens extends Array {
     error(what) {
         this.where().error(what);
     }
-
-    if(expected, yes, no) {
-        if (typeof expected === 'string' && this.value() === expected) {
-            this.advance();
-            return yes;
-        }
-        if (typeof expected !== 'string' && this.now() instanceof expected) {
-            this.advance();
-            return yes;
-        }
-        return no;
-    }
 }
 
 export class Token {

@@ -1,4 +1,4 @@
-import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
+import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, NumericCast, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
 import * as Types from '../types.mjs';
 import { Platform } from './platform.mjs';
 import { tmpdir } from 'os';
@@ -264,6 +264,18 @@ export class Linux_x86_64 extends Platform {
                 )
             } else if (op instanceof Label) {
                 asm.push(`.l${op.index}:`);
+            } else if (op instanceof NumericCast) {
+                const src = stack.pop();
+
+                if (src.type === Types.f32 && op.type.integral) asm.push(
+                    `cvtss2si rax, ${src}`,
+                    `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                ); else if (src.type === Types.f64 && op.type.integral) asm.push(
+                        `cvtsd2si rax, ${src}`,
+                        `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                ); else {
+                    throw new Error(`${src.type} -> ${op.type}`);
+                }
             } else {
                 console.log(asm.join('\n'));
                 console.dir(op, {depth: null});

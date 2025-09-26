@@ -80,7 +80,20 @@ export class Instructions extends Array {
                 return dst;
             }
 
-            where.error(`expected type '${dst}' but found '${src}'`);
+            if ((dst.integral || dst.scalar)) {
+                if (src.integral || src.scalar) {
+                    this.push(new NumericCast(dst));
+                    return dst;
+                } else if (src.referee && (src.referee.integral || src.referee.scalar)) {
+                    this.push(
+                        new ReadValue(),
+                        new NumericCast(dst)
+                    );
+                    return dst;
+                }
+            }
+
+            where.error(`expected type '${dst}' but found '${src.referee ? src.referee : src}'`);
         };
 
         /** @type {(self: Syntax.Tagmeme, scope: Bindings, expected?: Types.Type, explicit?: boolean) => Types.Type} */
@@ -486,6 +499,7 @@ export class JumpIfFalse { constructor(index) {this.index = index} }
 export class CmpLt { constructor(type) {this.type = type} }
 export class CmpLe { constructor(type) {this.type = type} }
 export class CmpEq { constructor(type) {this.type = type} }
+export class NumericCast { constructor(type) {this.type = type} }
 
 class Bindings {
     /**

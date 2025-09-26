@@ -1,0 +1,5 @@
+import { exit } from './process';
+
+let a = 14.8123 as f32;
+
+exit(a as s32);

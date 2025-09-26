@@ -17,8 +17,8 @@ export class Project {
             parsed.push(path);
 
             const module = new Module(path);
-            for (const i of module.statements.filter(
-                s => s instanceof ModuleImport || s instanceof BoundImport
+            for (const i of module.statements.filter(s =>
+                s instanceof ModuleImport || s instanceof BoundImport
             )) {
                 let path;
 
@@ -105,7 +105,7 @@ export class Scope extends Tagmeme {
             
             importing = false;
 
-            let exported = tokens.if('export', true, false);
+            const exported = tokens.value() === 'export' ? (tokens.advance(), true) : false;
 
             if (exported && !module) {
                 tokens.error(`exports may only be declared at the module scope`);
@@ -128,7 +128,7 @@ export class Scope extends Tagmeme {
                     this.statements.push(new Return(tokens));
                 } else if (tokens.value() === 'if') {
                     this.statements.push(new Condition(tokens));
-                } else if (tokens.value() === 'let' && tokens.peek() instanceof Token.Word) {
+                } else if (['let', 'const'].includes(tokens.value()) && tokens.peek() instanceof Token.Word) {
                     this.statements.push(new LocalDeclaration(tokens));
                 } else {
                     this.statements.push(new Expression(tokens));
@@ -183,8 +183,10 @@ export class LocalDeclaration extends Tagmeme {
     /** @param {Tokens} tokens */
     constructor(tokens) {
         super();
-        this.where = tokens.expect('let').where;
-        this.constant = tokens.value() === 'const' ? (tokens.advance(), true) : false;
+        this.constant = tokens.value() === 'const'
+            ? (tokens.advance(), true)
+            : (tokens.expect('let'), false);
+        this.where = tokens.where();
         this.binding = tokens.expect(Token.Word).value;
         this.value = [tokens.expect('='), parseExpression(tokens), tokens.expect(';')][1];
     }
