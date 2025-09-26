@@ -266,21 +266,31 @@ export class Linux_x86_64 extends Platform {
                 asm.push(`.l${op.index}:`);
             } else if (op instanceof NumericCast) {
                 const src = stack.pop();
+                const dst = stack.push(op.type);
 
                 if (src.type === Types.f32 && op.type.integral) asm.push(
                     `cvtss2si rax, ${src}`,
-                    `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                    `mov ${dst}, ${rax[dst.size]}`
                 ); else if (src.type === Types.f64 && op.type.integral) asm.push(
                     `cvtsd2si rax, ${src}`,
-                    `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                    `mov ${dst}, ${rax[dst.size]}`
                 ); else if (src.type === Types.f64 && op.type === Types.f32) asm.push(
                     `cvtsd2ss xmm0, ${src}`,
-                    `movd ${stack.push(op.type)}, xmm0`
+                    `movd ${dst}, xmm0`
                 ); else if (src.type === Types.f32 && op.type === Types.f64) asm.push(
                     `cvtss2sd xmm0, ${src}`,
-                    `movq ${stack.push(op.type)}, xmm0`
+                    `movq ${dst}, xmm0`
                 ); else {
-                    throw new Error(`${src.type} -> ${op.type}`);
+                    assert(src.type.integral && dst.type.integral);
+
+                    if (!src.type.signed && src.size >= dst.size) asm.push(
+                        `mov ${rax[src.size]}, ${src}`,
+                        `mov ${dst}, ${rax[dst.size]}`
+                    ); else {
+                        console.log(src.type);
+                        console.log(dst.type);
+                        throw new Error(`${src.type} -> ${op.type}`);
+                    }
                 }
             } else {
                 console.log(asm.join('\n'));

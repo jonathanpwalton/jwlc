@@ -124,7 +124,7 @@ export class Instructions extends Array {
                     this.push(new StoreMember(index));
                     return type;
                 }));
-                this[this.indexOf(null)] = new BeginAggregate(result);
+                this[this.lastIndexOf(null)] = new BeginAggregate(result);
             } else if (self instanceof Syntax.Index) {
                 const lhs = generateExpression(self.lhs, scope);
                 if (lhs.tuple) {
@@ -178,7 +178,7 @@ export class Instructions extends Array {
                         return property;
                     }
                 )), new Array(Object.values(self.members).length).fill('public'));
-                this[this.indexOf(null)] = new BeginAggregate(result);
+                this[this.lastIndexOf(null)] = new BeginAggregate(result);
             } else if (self instanceof Syntax.Integer) {
                 if (!expected) {
                     self.where.error(`unable to determine type of integer literal`);

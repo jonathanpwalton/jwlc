@@ -1,0 +1,9 @@
+import { exit } from './process';
+
+type A = {
+    x: {y: s32, z: u64, w: f32},
+    q: s32,
+};
+
+let a = [[14, 83, 4.82], 5] as A;
+exit(a.x.z as s32);
