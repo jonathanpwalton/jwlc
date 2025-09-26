@@ -82,9 +82,15 @@ export class Instructions extends Array {
 
             if ((dst.integral || dst.scalar)) {
                 if (src.integral || src.scalar) {
+                    if (!explicit) where.error(
+                        `expected explicit cast from '${src}' to '${dst}'`)
+
                     this.push(new NumericCast(dst));
                     return dst;
                 } else if (src.referee && (src.referee.integral || src.referee.scalar)) {
+                    if (!explicit) where.error(
+                        `expected explicit cast from '${src.referee}' to '${dst}'`)
+
                     this.push(
                         new ReadValue(),
                         new NumericCast(dst)

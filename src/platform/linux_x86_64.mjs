@@ -271,8 +271,14 @@ export class Linux_x86_64 extends Platform {
                     `cvtss2si rax, ${src}`,
                     `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
                 ); else if (src.type === Types.f64 && op.type.integral) asm.push(
-                        `cvtsd2si rax, ${src}`,
-                        `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                    `cvtsd2si rax, ${src}`,
+                    `mov ${stack.push(op.type)}, ${rax[getTypeSize(op.type)]}`
+                ); else if (src.type === Types.f64 && op.type === Types.f32) asm.push(
+                    `cvtsd2ss xmm0, ${src}`,
+                    `movd ${stack.push(op.type)}, xmm0`
+                ); else if (src.type === Types.f32 && op.type === Types.f64) asm.push(
+                    `cvtss2sd xmm0, ${src}`,
+                    `movq ${stack.push(op.type)}, xmm0`
                 ); else {
                     throw new Error(`${src.type} -> ${op.type}`);
                 }
