@@ -19,6 +19,7 @@ export class Instructions extends Array {
         const functionScopes = [];
 
         let locals = [];
+        let localTypes = [];
 
         /** @type {(self, scope: Bindings) => Types.Type} */
         const getType = (self, scope) => {
@@ -270,10 +271,10 @@ export class Instructions extends Array {
                     result = functionTypes[index];
                     assert(result);
                     this.push(new PushFunctionAddress(index, result));
-                } else if (bound instanceof Syntax.Parameter) {
+                } else if (bound instanceof Syntax.Parameter || bound instanceof Syntax.LocalDeclaration) {
                     const index = locals.indexOf(bound);
                     assert(index != -1);
-                    result = Types.ref(getType(bound.type, scope));
+                    result = Types.ref(localTypes[index]);
                     this.push(new PushLocalReference(index));
                 } else {
                     console.log(bound);
@@ -379,7 +380,8 @@ export class Instructions extends Array {
                 self.parameters.forEach(param => {
                     scope.bind(param.binding, param, param.where);
                     locals.push(param);
-                    this.push(new ReserveParameter(getType(param.type, scope)));
+                    localTypes.push(getType(param.type, scope));
+                    this.push(new ReserveParameter(localTypes[localTypes.length - 1]));
                 });
             }
 
@@ -416,6 +418,13 @@ export class Instructions extends Array {
                             this.push(new Label(labelIndex++));
                         }
                     });
+                } else if (stat instanceof Syntax.LocalDeclaration) {
+                    const type = generateExpression(stat.value, scope);
+                    if (type === Types.never || type === Types.none)
+                        stat.where.error(`cannot instantiate local variable with type '${type}'`);
+                    locals.push(stat);
+                    localTypes.push(type);
+                    scope.bind(stat.binding, stat, stat.where);
                 } else {
                     console.log(scope);
                     console.dir(stat, {depth: null});
@@ -429,6 +438,7 @@ export class Instructions extends Array {
 
         project.modules.forEach((module, i) => {
             locals = [];
+            localTypes = [];
             this.push(new Prologue(`module${i}`));
             generateScope(module);
             this.push(new Epilogue());
@@ -437,6 +447,7 @@ export class Instructions extends Array {
         let compiled = -1;
         while (++compiled != functions.length) {
             locals = [];
+            localTypes = [];
             this.push(new Prologue(compiled));
             generateScope(functions[compiled], functionScopes[compiled], functionTypes[compiled].output);
             this.push(new Epilogue());
@@ -508,7 +519,8 @@ class Bindings {
         this.names = parent ? {...parent.names} : {};
         if (isFunction) {
             for (const [name, binding] of Object.entries(this.names)) {
-                // TODO: remove local bindings
+                if (binding instanceof Syntax.LocalDeclaration)
+                    delete this.names[name];
             }
         }
     }

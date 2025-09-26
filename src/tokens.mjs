@@ -14,7 +14,7 @@ const POLYGRAPHS = [
 const KEYWORDS = [
     'import', 'export', 'function', 'object', 'as',
     'syscall', 'ptr', 'if', 'for', 'while', 'else',
-    'type',
+    'type', 'let', 'const',
 ];
 
 /** @extends {Array<Token>} */

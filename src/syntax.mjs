@@ -128,6 +128,8 @@ export class Scope extends Tagmeme {
                     this.statements.push(new Return(tokens));
                 } else if (tokens.value() === 'if') {
                     this.statements.push(new Condition(tokens));
+                } else if (tokens.value() === 'let') {
+                    this.statements.push(new LocalDeclaration(tokens));
                 } else {
                     this.statements.push(new Expression(tokens));
                 }
@@ -174,6 +176,17 @@ export class TypeDeclaration extends Tagmeme {
         this.where = tokens.expect('type').where;
         this.binding = tokens.expect(Token.Word, '=')[0].value;
         this.type = [parseType(tokens), tokens.expect(';')][0];
+    }
+}
+
+export class LocalDeclaration extends Tagmeme {
+    /** @param {Tokens} tokens */
+    constructor(tokens) {
+        super();
+        this.where = tokens.expect('let').where;
+        this.constant = tokens.value() === 'const' ? (tokens.advance(), true) : false;
+        this.binding = tokens.expect(Token.Word).value;
+        this.value = [tokens.expect('='), parseExpression(tokens), tokens.expect(';')][1];
     }
 }
 
