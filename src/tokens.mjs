@@ -3,7 +3,7 @@ import { readFileSync as open } from 'fs';
 const SYMBOLS = [
     '(', ')', '{', '}', '[', ']', '<', '>',
     '+', '-', '*', '/', ',', ';', ':', '.',
-    '=',
+    '=', '!',
 ];
 
 const POLYGRAPHS = [

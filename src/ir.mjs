@@ -83,13 +83,13 @@ export class Instructions extends Array {
             if ((dst.integral || dst.scalar)) {
                 if (src.integral || src.scalar) {
                     if (!explicit) where.error(
-                        `expected explicit cast from '${src}' to '${dst}'`)
+                        `expected explicit cast from type '${src}' to '${dst}'`)
 
                     this.push(new NumericCast(dst));
                     return dst;
                 } else if (src.referee && (src.referee.integral || src.referee.scalar)) {
                     if (!explicit) where.error(
-                        `expected explicit cast from '${src.referee}' to '${dst}'`)
+                        `expected explicit cast from type '${src.referee}' to '${dst}'`)
 
                     this.push(
                         new ReadValue(),
@@ -404,6 +404,7 @@ export class Instructions extends Array {
                 });
             }
 
+            const preScopeLocalCount = locals.length;
             self.statements.forEach(stat => {
                 if (stat instanceof Syntax.ModuleImport) {
                     const module = project.modules.find(m => m.where.path === stat.from);
@@ -450,6 +451,13 @@ export class Instructions extends Array {
                     stat.where.error(`unimplemented`);
                 }
             });
+
+            const localsTopPop = locals.length - preScopeLocalCount;
+            for (let i = 0; i < localsTopPop; i++) {
+                this.push(new Pop());
+                locals.pop();
+                localTypes.pop();
+            }
         };
 
         this.push(new Startup());
