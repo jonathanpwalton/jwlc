@@ -115,7 +115,7 @@ export class Scope extends Tagmeme {
                 const fn = new FunctionDeclaration(tokens);
                 if (exported) this.exports.push(fn);
                 this.functions.push(fn);
-            } else if (tokens.value() === 'type') {
+            } else if (tokens.value() === 'type' && tokens.peek() instanceof Token.Word) {
                 const type = new TypeDeclaration(tokens);
                 if (exported) this.exports.push(type);
                 this.types.push(type);
@@ -128,7 +128,7 @@ export class Scope extends Tagmeme {
                     this.statements.push(new Return(tokens));
                 } else if (tokens.value() === 'if') {
                     this.statements.push(new Condition(tokens));
-                } else if (tokens.value() === 'let') {
+                } else if (tokens.value() === 'let' && tokens.peek() instanceof Token.Word) {
                     this.statements.push(new LocalDeclaration(tokens));
                 } else {
                     this.statements.push(new Expression(tokens));
