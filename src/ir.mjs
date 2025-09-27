@@ -67,6 +67,7 @@ export class Instructions extends Array {
                 if (dst.visibilities.includes('private'))
                     where.error(`cannot construct type '${dst}' because it has private properties`);
 
+                this.push(new Retype(dst));
                 return dst;
             }
 
@@ -77,6 +78,7 @@ export class Instructions extends Array {
                 if (dst.visibilities.includes('private'))
                     where.error(`cannot construct type '${dst}' because it has private properties`);
 
+                this.push(new Retype(dst));
                 return dst;
             }
 
@@ -518,6 +520,7 @@ export class CmpLt { constructor(type) {this.type = type} }
 export class CmpLe { constructor(type) {this.type = type} }
 export class CmpEq { constructor(type) {this.type = type} }
 export class NumericCast { constructor(type) {this.type = type} }
+export class Retype { constructor(type) {this.type = type} }
 
 class Bindings {
     /**

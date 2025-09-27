@@ -1,4 +1,4 @@
-import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, NumericCast, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushString, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
+import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, NumericCast, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushString, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Retype, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
 import * as Types from '../types.mjs';
 import { Platform } from './platform.mjs';
 import { tmpdir } from 'os';
@@ -306,6 +306,8 @@ export class Linux_x86_64 extends Platform {
                         throw new Error(`${src.type} -> ${op.type}`);
                     }
                 }
+            } else if (op instanceof Retype) {
+                stack.top().type = op.type;
             } else {
                 console.log(asm.join('\n'));
                 console.dir(op, {depth: null});
