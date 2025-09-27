@@ -1,4 +1,4 @@
-import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, NumericCast, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
+import { BeginAggregate, Call, CmpEq, CmpLe, CmpLt, Epilogue, JumpIfFalse, Label, NumericCast, OffsetReferenceToMember, Pop, Prologue, PushDifference, PushFunctionAddress, PushInteger, PushLocalReference, PushProduct, PushQuotient, PushReturnValue, PushScalar, PushString, PushSum, PushSyscallReturnValue, PushTopReference, ReadValue, ReserveParameter, Return, Rotate, Shutdown, Startup, StoreMember, Syscall } from '../ir.mjs';
 import * as Types from '../types.mjs';
 import { Platform } from './platform.mjs';
 import { tmpdir } from 'os';
@@ -25,6 +25,8 @@ const r15 = {8: 'r15', 4: 'r15d', 2: 'r15w', 1: 'r15b'};
 
 export class Linux_x86_64 extends Platform {
     getSyscallTypes(number) { switch (number) {
+        case 1:
+            return [[Types.u64, Types.u32, Types.ptr(Types.u8), Types.usz], Types.ssz];
         case 60:
             return [[Types.u64, Types.s32], Types.never];
         default:
@@ -34,6 +36,7 @@ export class Linux_x86_64 extends Platform {
     compile(instructions, outputPath) {
         const asm = [];
         const mods = [];
+        const strs = [];
         let stack = new Stack();
 
         let indent = 0;
@@ -128,10 +131,10 @@ export class Linux_x86_64 extends Platform {
             } else if (op instanceof ReserveParameter) {
                 stack.parameter(op.type);
             } else if (op instanceof PushInteger) {
-                const reg = rax[op.type.length / 8];
+                const dst = stack.push(op.type);
                 asm.push(
-                    `mov ${reg}, ${op.value}`,
-                    `mov ${stack.push(op.type)}, ${reg}`,
+                    `mov ${rax[dst.size]}, ${op.value}`,
+                    `mov ${dst}, ${rax[dst.size]}`,
                 );
             } else if (op instanceof PushLocalReference) {
                 asm.push(
@@ -255,6 +258,17 @@ export class Linux_x86_64 extends Platform {
                 asm.push(
                     ...copyToMemory(aggregate.members[op.index], member, member.size)
                 );
+            } else if (op instanceof PushString) { 
+                if (!strs.includes(op.value)) strs.push(op.value);
+                const data = stack.push(Types.str).members[0];
+                const length = stack.top().members[1];
+
+                asm.push(
+                    `lea rax, str${strs.indexOf(op.value)}`,
+                    `mov ${data}, rax`,
+                    `mov rax, ${new TextEncoder().encode(JSON.parse(`"${op.value}"`)).length}`,
+                    `mov ${length}, rax`
+                );
             } else if (op instanceof JumpIfFalse) {
                 asm.push(
                     `mov al, 1`,
@@ -300,6 +314,11 @@ export class Linux_x86_64 extends Platform {
         }
 
         asm[asm.indexOf('#CALLMODS#')] = mods.join('\n');
+
+        asm.push('section .rodata');
+        strs.forEach((s, i) => asm.push(`  str${i}: db ${
+            new TextEncoder().encode(JSON.parse(`"${s}"`)).join(', ')
+        }, 0`));
 
         const asmPath = `${tmpdir()}/jwl.s`;
         const objPath = `${tmpdir()}/jwl.o`;
@@ -462,7 +481,7 @@ function getTypeSize(type) {
         return type.length / 8;
     }
 
-    if (type.callable || type.pointer) {
+    if (type.callable || type.pointer || [Types.usz, Types.ssz].includes(type)) {
         return 8;
     }
 
@@ -499,7 +518,7 @@ function getTypeAlignment(type) {
         return type.length / 8;
     }
 
-    if (type.callable || type.pointer) {
+    if (type.callable || type.pointer || [Types.usz, Types.ssz].includes(type)) {
         return 8;
     }
 

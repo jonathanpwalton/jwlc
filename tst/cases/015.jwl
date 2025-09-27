@@ -1,4 +1,4 @@
-import { exit } from './process';
+import { exit } from './helpers';
 
 let a = 14.8123 as f32;
 

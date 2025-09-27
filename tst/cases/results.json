@@ -49,5 +49,11 @@
     },
     "016.jwl": {
         "status": 83
+    },
+    "017.jwl": {
+        "status": 0,
+        "stdout": [
+            "Hello world!"
+        ]
     }
 }

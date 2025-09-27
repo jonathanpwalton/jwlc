@@ -18,7 +18,7 @@ if (fails.length) {
 }
 
 function reportCaseResult(path, status, stdout, stderr) {
-    console.log('    status:', `${status}`.padEnd(3), cases[path].status != status
+    console.log('    status:', `${status}`.padStart(3), cases[path].status != status
         ? `\x1b[91mFAIL\x1b[0m (${cases[path].status})`
         : '\x1b[92mPASS\x1b[0m'
     );

@@ -98,6 +98,25 @@ export const obj = (properties, visibilities) => {
     return objects[name];
 };
 
+const arrays = {};
+
+export const arr = (type) => {
+    assert(type instanceof Type);
+    const name = `${type}[]`;
+    if (!(name in arrays)) {
+        const arr = arrays[name] = new Type(name);
+        arr.array = true;
+        arr.object = true;
+        arr.properties = {data: ptr(type), length: usz};
+        arr.members = Object.values(arr.properties);
+        arr.visibilities = ['readonly', 'readonly'];
+    }
+    return arrays[name];
+}
+
+export const str = arr(u8);
+str.name = 'str';
+
 const tuples = {};
 
 export const tuple = (members) => {

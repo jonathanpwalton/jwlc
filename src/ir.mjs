@@ -361,6 +361,9 @@ export class Instructions extends Array {
 
                 result = Types.bool;
                 this.push(new CmpEq(lhs));
+            } else if (self instanceof Syntax.String) {
+                result = Types.str;
+                this.push(new PushString(self.value));
             } else {
                 console.log(this);
                 console.log(self);
@@ -494,6 +497,7 @@ export class PushSyscallReturnValue { constructor(type) {this.type = type} }
 export class PushFunctionAddress { constructor(index, type) {this.index = index; this.type = type}}
 export class PushInteger { constructor(type, value) {this.type = type; this.value = value} }
 export class PushScalar { constructor(type, value) {this.type = type; this.value = value} }
+export class PushString { constructor(value) {this.value = value} }
 export class PushLocalReference { constructor(index) {this.index = index}}
 export class PushTopReference {}
 export class Return { constructor(type) {this.type = type} }
@@ -536,6 +540,7 @@ class Bindings {
         ssz:    Types.ssz,
         f32:    Types.f32,
         f64:    Types.f64,
+        str:    Types.str,
         bool:   Types.bool,
         none:   Types.none,
         never:  Types.never,

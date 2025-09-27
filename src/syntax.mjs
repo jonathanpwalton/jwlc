@@ -244,9 +244,9 @@ export class PointerType extends Tagmeme {
     /** @param {Tokens} tokens */
     constructor(tokens) {
         super();
-        this.where = tokens.expect('ptr', '[')[0].where;
+        this.where = tokens.expect('ptr', '<')[0].where;
         this.pointee = parseType(tokens);
-        tokens.expect(']');
+        tokens.expect('>');
     }
 }
 
@@ -493,6 +493,15 @@ export class Scalar extends Tagmeme {
     }
 }
 
+export class String extends Tagmeme {
+    /** @param {Tokens} tokens */
+    constructor(tokens) {
+        super();
+        this.where = tokens.where();
+        this.value = tokens.expect(Token.String).value;
+    }
+}
+
 export class ObjectLiteral extends Tagmeme {
     /** @param {Tokens} tokens */
     constructor(tokens) {
@@ -618,6 +627,7 @@ function parsePostfixExpression(tokens) {
 /** @param {Tokens} tokens */
 function parsePrimaryExpression(tokens) {
     if (tokens.now() instanceof Token.Integer) return new Integer(tokens);
+    if (tokens.now() instanceof Token.String) return new String(tokens);
     if (tokens.now() instanceof Token.Scalar) return new Scalar(tokens);
     if (tokens.now() instanceof Token.Word) return new Binding(tokens);
     if (tokens.value() === '{') return new ObjectLiteral(tokens);

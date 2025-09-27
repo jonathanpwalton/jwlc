@@ -1,0 +1,8 @@
+export function exit(code: s32): never {
+    syscall(60, code);
+}
+
+export function println(msg: str) {
+    syscall(1, 1, msg.data, msg.length);
+    syscall(1, 1, '\n'.data, 1);
+}

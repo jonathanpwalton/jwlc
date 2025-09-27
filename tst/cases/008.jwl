@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { exit } from './process';
+import { exit } from './helpers';
 
 exit(getCodeFromTuple([1, 2.245, 3, 97, 5])); // 97
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { exit } from './process';
+import { exit } from './helpers';
 
 exit(add([1, 2, 3], [4, 5, 6]).z);
 

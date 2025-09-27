@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { exit } from './process';
+import { exit } from './helpers';
 
 exit(fromObject([4, 17, 3]));
 

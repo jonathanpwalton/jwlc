@@ -1,4 +1,4 @@
-import { exit } from './process';
+import { exit } from './helpers';
 
 type A = {
     x: {y: s32, z: u64, w: f32},
